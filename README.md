@@ -285,6 +285,8 @@ docker compose up -d
 
 The Docker Compose configuration file defines also the port mapping, so the application is accessible from (http://localhost:80)
 
+Testing the api
+
 ```bash
 > curl http://localhost:80/catalogue/03fef6ac-1896-4ce8-bd69-b798f85c6e0b 
 {"id":"03fef6ac-1896-4ce8-bd69-b798f85c6e0b","name":"Holy","description":"Socks fit for a Messiah. You too can experience walking in water with these special edition beauties. Each hole is lovingly proggled to leave smooth edges. The only sock approved by a higher power.","imageUrl":["/catalogue/images/holy_1.jpeg","/catalogue/images/holy_2.jpeg"],"price":99.99,"count":1,"tag":["magic","action"]}
@@ -293,19 +295,72 @@ The Docker Compose configuration file defines also the port mapping, so the appl
 
 ## Deploy with Kubernetes
 
-Kubernetes is ....
+## Introduction to Kubernetes
+
+Kubernetes is an open-source platform designed to automate the deployment, scaling, and management of containerized applications. It provides a framework for running distributed systems reliably and efficiently.  
+
+### Key Advantages
+
+- **Automated Scaling:** Kubernetes can automatically scale applications up or down based on demand.  
+- **Self-Healing:** Containers that fail or become unresponsive are automatically restarted or replaced.  
+- **Service Discovery & Load Balancing:** Kubernetes can expose containers using DNS names or IP addresses and distribute network traffic across multiple instances.  
+- **Declarative Configuration:** The desired state of the system can be defined in configuration files, allowing Kubernetes to maintain that state automatically.  
+- **Portability:** Kubernetes works with various container runtimes and cloud providers, ensuring applications can run consistently across different environments.  
+
+### Core Functionality
+
+- **Container Orchestration:** Manages the lifecycle of containers, including deployment, updates, and rollback.  
+- **Networking & Service Management:** Provides internal networking, service discovery, and load balancing between containers.  
+- **Storage Orchestration:** Automates mounting and management of storage resources for containers.  
+- **Resource Management:** Efficiently schedules containers based on available CPU, memory, and other resources.  
+
+Kubernetes is widely adopted for running complex, production-grade applications with high availability, scalability, and resilience.
+
+
+Minikube.....
 
 YAML ....
     Service...
     POD...
     Replica...
 
-Deploy.....
+Deploy flask example....
+
+devo fare il build da dentro minikube, perche?
+
+minikube start --memory 8196
+
+eval $(minikube docker-env)
+
+ DOCKER_BUILDKIT=0  docker build  -t flaskappimg .
+
+minikube kubectl -- apply -f ./k8s_flaskappimg.yaml
+
+minikube kubectl -- get pods
+minikube kubectl -- get services
+
+minikube service flask-app-service --url
+
+minikube kubectl -- delete -f ./k8s_flaskappimg.yaml
+
+Deploy SockShop...
+
+```bash
+minikube kubectl -- apply -f ./deploy/kubernetes/complete-demo.yaml
+
+minikube kubectl -- get pods -n sock-shop
+minikube kubectl -- get services -n sock-shop
+
+minikube service front-end --url -n sock-shop
+```
+
+Forse bisogna aumentare la memodia per minikube
+minikube stop
+minikube config set memory 4096
+minikube start
 
 
-## Sending Requests
 
-Exploiting the openapi specs we can send the requests
+minikube kubectl -- get pods -n sock-shop
 
-curl...
-postman..
+minikube kubectl -- delete namespace sock-shop

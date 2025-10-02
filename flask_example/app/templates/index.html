@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Forecast App</title>
+</head>
+<body>
+    <h1>Welcome to the Forecast App</h1>
+    <form action="/forecast_web" method="post">
+        <label>Store Number:
+            <input type="number" name="store_number" required>
+        </label><br>
+        <label>Forecast Start Date:
+            <input type="datetime-local" name="forecast_start_date">
+        </label><br>
+        <button type="submit">Get Forecast</button>
+    </form>
+
+    {% if forecast %}
+        <h2>Forecast Result:</h2>
+        <pre>{{ forecast }}</pre>
+    {% endif %}
+</body>
+</html>
