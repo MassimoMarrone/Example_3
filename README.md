@@ -82,10 +82,6 @@ COPY app.py .
 CMD ["python", "app.py"]
 ```
 
-
-
-
-
 The app.py can contains all you want, for example a simple Hello World code.
 
 ```python
@@ -174,7 +170,6 @@ The *flask_example* directory provides a skeleton application that returns a lis
 This directory contains the file *app.py*, which defines the web application gateway using [Flask](https://github.com/pallets/flask).
 
 
-
 From the official repository
 ```
 Flask is a lightweight WSGI web application framework. It is designed to make getting started quick and easy, with the ability to scale up to complex applications. It began as a simple wrapper around Werkzeug and Jinja, and has become one of the most popular Python web application frameworks.
@@ -238,8 +233,8 @@ A multi-container application can, in principle, be deployed by starting each co
 
 To address this, Docker provides a tool called **Docker Compose**, which enables the deployment of an entire application automatically in a single step. Docker Compose relies on a configuration file (`.yml`/`.yaml`) that specifies all the information necessary for deployment.  
 
-
-INSTALLING DOCKER COMPOSE.....
+Docker Desktop includes the **Docker Compose** tool by default.  
+In contrast, the standalone **Docker Engine** does not. In this case, **Docker Compose** is available as a plugin and must be installed separately by following the official [installation guide](https://docs.docker.com/compose/install/).  
 
 
 The following is a snippet of a Docker Compose configuration file.  
@@ -285,7 +280,7 @@ docker compose up -d
 
 The Docker Compose configuration file defines also the port mapping, so the application is accessible from (http://localhost:80)
 
-Testing the api
+Testing the API
 
 ```bash
 > curl http://localhost:80/catalogue/03fef6ac-1896-4ce8-bd69-b798f85c6e0b 
@@ -430,13 +425,14 @@ flask-app-service   NodePort    10.98.88.0   <none>        5000:30500/TCP   73s
 kubernetes          ClusterIP   10.96.0.1    <none>        443/TCP          34m
 ```
 
-Getting the ip...
+Getting the ip
+
 ```bash
 > minikube service flask-app-service --url
 http://192.168.49.2:30500
 ```
 
-Deletiong the deplment
+Deleting the deployment
 ```bash
 minikube kubectl -- delete -f ./k8s.yaml
 ```
