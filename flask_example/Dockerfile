@@ -7,6 +7,7 @@ RUN pip install --user --no-cache-dir -r requirements.txt
 FROM python:3.10-slim AS app
 COPY --from=builder /root/.local /root/.local
 COPY --from=builder /src .
+WORKDIR /app
 
 ENV PATH=/root/.local:$PATH
 EXPOSE 5000

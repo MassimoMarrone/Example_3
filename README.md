@@ -1,6 +1,6 @@
 # AISE_Sockshop
 
-The purpose of this tutorial is to provide a brief introduction to microservices, with a particular focus on their deployment. Specifically, we will deploy the [SockShop](https://github.com/microservices-demo/microservices-demo) application locally. **SockShop** is a well-known microservices-based benchmarking application. The deployment will be carried out using [Docker](https://www.docker.com/) and [Kubernetes](https://kubernetes.io/). In addition, this tutorial will include a short background on these tools to help contextualize the process.
+The purpose of this tutorial is to provide a brief introduction to microservices, with a particular focus on their deployment. Specifically, we will deploy the [SockShop](https://github.com/microservices-demo/microservices-demo) application locally. **SockShop** is a well-known microservices-based benchmarking application. The deployment will be carried out using [Docker](https://www.docker.com/) or [Kubernetes](https://kubernetes.io/). In addition, this tutorial will include a short background on these tools to help contextualize the process.
 
 ## Microservices
 
@@ -9,7 +9,7 @@ Microservices are an **architectural style** for building applications as a coll
 ### Key Characteristics
 - **Independence**: Each microservice can be developed, deployed, and scaled independently.  
 - **Specialization**: A microservice is focused on solving a single business capability.  
-- **Communication**: Services interact through well-defined interfaces, often using REST, gRPC, or message queues.  
+- **Communication**: Services interact through well-defined interfaces, often using REST.
 - **Resilience**: The failure of one service does not necessarily bring down the whole system.  
 - **Technology Flexibility**: Different microservices can be built using different programming languages, frameworks, or databases.  
 
@@ -35,13 +35,13 @@ The microservices highlighted in red in the image are referred to as **edge serv
 
 ## Deploy with Docker compose
 
-## Introduction to Docker
+### Introduction to Docker
 
 **Docker** is an open-source platform designed to simplify the process of building, deploying, and running applications. It enables developers to package an application and its dependencies into a standardized unit called a **container**. Containers are lightweight, portable, and consistent across different environments, ensuring that an application behaves the same way in development, testing, and production.
 
 ### Why Docker?
 
-Traditionally, deploying an application required setting up servers, installing dependencies, and ensuring that configurations matched across environments. This often led to the classic issue of *"it works on my machine, but not in production."* Docker addresses this problem by isolating applications inside containers that run independently of the host system’s configuration.
+Traditionally, deploying an application required setting up servers, installing dependencies, and ensuring that configurations matched across environments. This often led to the classic issue of *"it works on my machine, but not in production".* Docker addresses this problem by isolating applications inside containers that run independently of the host system’s configuration.
 
 ### Key Features
 
@@ -49,13 +49,6 @@ Traditionally, deploying an application required setting up servers, installing 
 - **Isolation:** Each container runs in its own environment, independent from others.  
 - **Lightweight:** Containers share the host system’s kernel, making them more efficient than virtual machines.  
 - **Scalability:** Containers can be easily replicated and orchestrated, which is essential for modern distributed applications.  
-
-### Docker in Practice
-
-With Docker, developers can:  
-- Create container images that package their code with the required dependencies.  
-- Run these images consistently across local machines, servers, or cloud environments.  
-- Use tools like **Docker Compose** to manage multi-container applications.  
 
 ### Dockerfile
 
@@ -102,7 +95,7 @@ print('Hello World')
 ```bash
 cd example_app
 docker build -t helloworld-app-image .
-docker run my-python-app
+docker run --name helloworld-app-container helloworld-app-image
 ```
 
 -t allows to specify a tag (a name) for the image built
@@ -167,14 +160,14 @@ d88daa7ce0b2   vllm                   "bash"            13 days ago      Created
 f389b5625bc7   vllm                   "bash"            13 days ago      Created                               quirky_darwin
 ```
 
-Removing the stop/container
+Removing/Stopping the container
 ```bash
 docker stop helloworld-app-container
 docker rm helloworld-app-container
 ```
 
 
-## Deploy Flake Example
+## Deploy Flask Example
 
 The *flask_example* directory provides a skeleton application that returns a list of random numbers when a forecast is requested.  
 
@@ -227,19 +220,26 @@ Example of request
   ],
   "store_number": 10
 }
-
 ```
+
+The application also exposes a web interface at (http://localhost:2557).
+
+![Flask Example](img/flaskexample.png)
+
 ## Deploy SockShop with Docker
 
-As seen in the previous section, SockShop is a more complex application.  
-In the previous examples, we deployed single-container applications.  
+In the previous section, we deployed a single-container application. However, SockShop consists of multiple containers.
 
-In this section, we will focus on deploying and running a multi-container application, using SockShop as example.
+In this section, we will focus on deploying and running a multi-container application, using SockShop as an example.
+
+**SockShop** is divided into multiple repositories, with each repository dedicated to a specific microservice. Additionally, there is a *main* repository that contains the configuration required to deploy the entire application.  
+
+A multi-container application can, in principle, be deployed by starting each container individually. However, as is easy to see, this approach becomes impractical for large-scale applications.  
+
+To address this, Docker provides a tool called **Docker Compose**, which enables the deployment of an entire application automatically in a single step. Docker Compose relies on a configuration file (`.yml`/`.yaml`) that specifies all the information necessary for deployment.  
 
 
-SockShop is devided in many repository, each one for each microservice and a 'main' repository that contains the configuration for deploying the entire application. 
-A multi-containers application can be deployied by deolpying each container a time. But, it is simple to understand, that with huge application is impossibile. 
-So, Docker provides a tool (Docker Compose) for automatically and in one step deploying an entire application. Docker Compose requires a configuration file (.yml) that defines all the infromation necessary for the deployment. 
+INSTALLING DOCKER COMPOSE.....
 
 
 The following is a snippet of a Docker Compose configuration file.  
@@ -276,7 +276,7 @@ services:
 ```
 
 
-For deploying dockshop, we need to clone the [main repository](https://github.com/microservices-demo/microservices-demo). 
+For deploying SockShop, we need to clone the [main repository](https://github.com/microservices-demo/microservices-demo). 
 
 ```bash
 cd deploy/docker-compose
@@ -292,10 +292,14 @@ Testing the api
 {"id":"03fef6ac-1896-4ce8-bd69-b798f85c6e0b","name":"Holy","description":"Socks fit for a Messiah. You too can experience walking in water with these special edition beauties. Each hole is lovingly proggled to leave smooth edges. The only sock approved by a higher power.","imageUrl":["/catalogue/images/holy_1.jpeg","/catalogue/images/holy_2.jpeg"],"price":99.99,"count":1,"tag":["magic","action"]}
 ```
 
+Stopping the application
+
+```bash
+docker compose stop
+docker compose rm
+```
 
 ## Deploy with Kubernetes
-
-## Introduction to Kubernetes
 
 Kubernetes is an open-source platform designed to automate the deployment, scaling, and management of containerized applications. It provides a framework for running distributed systems reliably and efficiently.  
 
@@ -317,50 +321,174 @@ Kubernetes is an open-source platform designed to automate the deployment, scali
 Kubernetes is widely adopted for running complex, production-grade applications with high availability, scalability, and resilience.
 
 
-Minikube.....
+For local development purposes, a lightweight version of Kubernetes called **Minikube** is available.  
 
-YAML ....
-    Service...
-    POD...
-    Replica...
+**Minikube** quickly sets up a local Kubernetes cluster on macOS, Linux, and Windows. We proudly focus on helping application developers and new Kubernetes users.
 
-Deploy flask example....
+MiniKube can be installed following the official [guide](https://minikube.sigs.k8s.io/docs/start/?arch=%2Flinux%2Fx86-64%2Fstable%2Fbinary+download). 
 
-devo fare il build da dentro minikube, perche?
+The local Kubernetes cluster can be run
+```
+minikube start --memory='8196' --cpus='4'
+```
 
-minikube start --memory 8196
+Kubernetes (and Minikube) provides a command-line tool for managing the cluster, called **kubectl**.  
 
-eval $(minikube docker-env)
+`kubectl` can be installed using the following command:  
 
- DOCKER_BUILDKIT=0  docker build  -t flaskappimg .
+```bash
+minikube kubectl -- get pods -A
+```
 
-minikube kubectl -- apply -f ./k8s_flaskappimg.yaml
+This command uses `kubectl` to display the list of pods running in the cluster.
 
-minikube kubectl -- get pods
-minikube kubectl -- get services
+### Deploy flask example
 
-minikube service flask-app-service --url
+Firstly, we need to define a configuration for Kubernetes. 
 
-minikube kubectl -- delete -f ./k8s_flaskappimg.yaml
+The configuration (YAML) is as follows: 
 
-Deploy SockShop...
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-app-deployment
+spec:
+  replicas: 2  # 
+  selector:
+    matchLabels:
+      app: flask-app
+  template:
+    metadata:
+      labels:
+        app: flask-app
+    spec:
+      containers:
+        - name: flask-app
+          image: flaskappimg
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 5000
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: flask-app-service
+spec:
+  type: NodePort
+  selector:
+    app: flask-app
+  ports:
+    - protocol: TCP
+      port: 5000        # Port inside the cluster
+      targetPort: 5000  # Port container listens on
+      nodePort: 30500   # Port exposed on host
+```
+In the configuration file, two key elements can be identified: **Deployment** and **Service**.  
+
+- A **Deployment** manages a set of Pods to run an application workload, typically a stateless one. It defines the desired state of the application, and the **Deployment Controller** ensures that the actual state matches it at a controlled pace. In this case, the *flask-app-deployment* is created, as specified by the `.metadata.name` field. This name is later used as a suffix for the associated ReplicaSets and Pods. The Deployment creates a **ReplicaSet**, which, according to the `.spec.replicas` field, manages two replicated Pods. A **ReplicaSet** ensures a stable number of running Pods. It is defined by:  
+  - A **selector**, to identify the Pods it manages.  
+  - A **replica count**, to indicate how many Pods should be maintained.  
+  - A **Pod template**, which describes how new Pods are created when needed.
+
+  By combining these elements, the ReplicaSet maintains the desired number of Pods by creating or removing them as necessary.
+
+- A **Service** exposes an application running in your cluster behind a single outward-facing endpoint, even when the workload is split across multiple backends (pods). Thus, it simplifies service discovery without requiring changes to your application code. Whether the application is cloud-native or a legacy app that has been containerized, a Service makes a set of Pods available on the network so that clients can interact with them. Each Pod receives its own IP address. However, Pods are ephemeral—at any given time, the set of Pods running for a Deployment may change. This creates a challenge: if some Pods (the *backends*) provide functionality to others (the *frontends*), how can frontends reliably locate and connect to backends as their IPs change? The **Service API** solves this problem by abstracting groups of Pods and providing stable network endpoints. A Service defines:  
+  - A logical set of Pods (usually determined by a **selector**)  
+  - A policy that governs how these Pods are exposed on the network  
+
+
+Now, we can deploy our example. 
+Firstly, we need to build the image. 
+Using MiniKube we need to make the build image accessibile, so, we need to build the image inside minikube. 
+
+```bash
+cd flask_example
+eval $(minikube docker-env) 
+DOCKER_BUILDKIT=0  docker build  -t flaskappimg .
+```
+
+In addition, for avoind that Kubernetes try to pull the image from Docker Hub, we specified the parameter `.spec.replicas.template.spec.containter.imagePullPolicy` as `Never`.
+
+Deploy 
+```bash
+minikube kubectl -- apply -f ./k8s.yaml
+```
+
+```bash
+> minikube kubectl -- get pods
+NAME                                    READY   STATUS    RESTARTS   AGE
+flask-app-deployment-7c76b8dc7b-8vcb4   1/1     Running   0          41s
+flask-app-deployment-7c76b8dc7b-srfbr   1/1     Running   0          41s
+```
+
+```bash
+> minikube kubectl -- get services
+NAME                TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)          AGE
+flask-app-service   NodePort    10.98.88.0   <none>        5000:30500/TCP   73s
+kubernetes          ClusterIP   10.96.0.1    <none>        443/TCP          34m
+```
+
+Getting the ip...
+```bash
+> minikube service flask-app-service --url
+http://192.168.49.2:30500
+```
+
+Deletiong the deplment
+```bash
+minikube kubectl -- delete -f ./k8s.yaml
+```
+
+### Deploy SockShop with Kubernetes
 
 ```bash
 minikube kubectl -- apply -f ./deploy/kubernetes/complete-demo.yaml
-
-minikube kubectl -- get pods -n sock-shop
-minikube kubectl -- get services -n sock-shop
-
-minikube service front-end --url -n sock-shop
 ```
 
-Forse bisogna aumentare la memodia per minikube
-minikube stop
-minikube config set memory 4096
-minikube start
-
-
-
+Waiting all the pods are in Running state.
+```bash
 minikube kubectl -- get pods -n sock-shop
+NAME                            READY   STATUS    RESTARTS   AGE
+carts-5f5859c84b-jfzng          1/1     Running   0          5m5s
+carts-db-544c5bc9c8-smqtw       1/1     Running   0          5m5s
+catalogue-cd4ff8c9f-6h26s       1/1     Running   0          5m5s
+catalogue-db-74885c6d4c-954qf   1/1     Running   0          5m5s
+front-end-7467866c7b-ptd29      1/1     Running   0          5m5s
+orders-6b8dd47986-qpvdp         1/1     Running   0          5m4s
+orders-db-5d7db99c6-wnz5b       1/1     Running   0          5m4s
+payment-c5fbdbc6-wjm8c          1/1     Running   0          5m4s
+queue-master-7f965677fb-njsdk   1/1     Running   0          5m4s
+rabbitmq-59955f8bff-8z6d2       2/2     Running   0          5m3s
+session-db-5d89f4b5bb-r9jjx     1/1     Running   0          5m3s
+shipping-868cd6587d-xm4rf       1/1     Running   0          5m3s
+user-67488ff854-9bqkx           1/1     Running   0          5m3s
+user-db-7bd86cdcd-dhvfh         1/1     Running   0          5m2s
 
-minikube kubectl -- delete namespace sock-shop
+```
+
+```bash
+> minikube kubectl -- get services -n sock-shop
+NAME           TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)             AGE
+carts          ClusterIP   10.108.208.96    <none>        80/TCP              5m28s
+carts-db       ClusterIP   10.110.72.207    <none>        27017/TCP           5m28s
+catalogue      ClusterIP   10.106.183.130   <none>        80/TCP              5m28s
+catalogue-db   ClusterIP   10.98.240.141    <none>        3306/TCP            5m28s
+front-end      NodePort    10.110.224.11    <none>        80:30001/TCP        5m28s
+orders         ClusterIP   10.107.117.23    <none>        80/TCP              5m27s
+orders-db      ClusterIP   10.98.158.14     <none>        27017/TCP           5m27s
+payment        ClusterIP   10.97.247.75     <none>        80/TCP              5m27s
+queue-master   ClusterIP   10.96.94.35      <none>        80/TCP              5m27s
+rabbitmq       ClusterIP   10.97.136.226    <none>        5672/TCP,9090/TCP   5m26s
+session-db     ClusterIP   10.97.181.117    <none>        6379/TCP            5m26s
+shipping       ClusterIP   10.96.70.193     <none>        80/TCP              5m26s
+user           ClusterIP   10.98.189.65     <none>        80/TCP              5m26s
+user-db        ClusterIP   10.111.44.208    <none>        27017/TCP           5m25s
+```
+
+Getting the url
+```bash
+> minikube service front-end --url -n sock-shop
+http://192.168.49.2:30001
+```
