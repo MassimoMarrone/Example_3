@@ -399,9 +399,19 @@ Firstly, we need to build the image.
 Using MiniKube we need to make the build image accessibile, so, we need to build the image inside minikube. 
 
 ```bash
+Per distribuzioni Linux
 cd flask_example
 eval $(minikube docker-env) 
 DOCKER_BUILDKIT=0  docker build  -t flaskappimg .
+```
+
+```bash
+Per powershell
+cd flask_example
+minikube docker-env | Invoke-Expression
+$env:DOCKER_BUILDKIT = 0 
+docker build -t flaskappimg .
+
 ```
 
 In addition, for avoind that Kubernetes try to pull the image from Docker Hub, we specified the parameter `.spec.replicas.template.spec.containter.imagePullPolicy` as `Never`.
